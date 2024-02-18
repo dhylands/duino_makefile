@@ -21,7 +21,9 @@ make BOARD=picow upload
 
 # Top level Makefile in a library
 
-Outside of the DuinoMakefile repository, the top level `Makefile` needs to include the DuinoMakefile's top-level Makefile, so assuming that the DuinoMakefile repository is beside the library in question, it's top level Makefile might look like:
+Outside of the DuinoMakefile repository, the top level `Makefile` needs to include the
+DuinoMakefile's top-level Makefile, so assuming that the DuinoMakefile repository is beside
+the library in question, it's top level Makefile might look like:
 ```
 THIS_DIR := $(patsubst %/,%,$(dir $(lastword $(MAKEFILE_LIST))))
 TOP_DIR ?= $(THIS_DIR)
@@ -37,17 +39,14 @@ endif
 
 # From within a directory containing a .ino file
 
-To use the make command from within a directory you must provide a `Makefile`. This Makefile typically contains 2 lines. The first line
-defines a variable called `TOP_DIR` which is a relative path to get from
-the current directory to the top of the library. You can use the following git command to achieve this:
-```
-TOP_DIR := $(patsubst %/,%,$(shell git rev-parse --path-format=relatve --show-toplevel))
-```
-The `$(patsubst %/,%,test)` remove the trailing slash that git rev-parse puts on the directoty.
+To use the make command from within a directory you must provide a `Makefile`. This Makefile
+typically contains 2 lines. The first line defines a variable called `TOP_DIR` which is a
+relative path to get from the current directory to the top of the library.
 
-Finally, you should incude the `Makefile` from the top of the repository. So the final `Makefile` will look like this:
+Finally, you should incude the `Makefile` from the top of the repository. So the final
+`Makefile` for a sketch in the examples/SOME-EXAMPLE will look like this:
 ```
-TOP_DIR := $(patsubst %/,%,$(shell git rev-parse --path-format=relatve --show-toplevel))
+TOP_DIR := ../..
 include $(TOP_DIR)/Makefile
 ```
 

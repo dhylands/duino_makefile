@@ -1,2 +1,2 @@
-TOP_DIR := $(patsubst %/,%,$(shell git rev-parse --path-format=relative --show-toplevel))
+TOP_DIR := ../..
 include $(TOP_DIR)/Makefile
