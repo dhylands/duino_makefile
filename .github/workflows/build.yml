@@ -1,0 +1,27 @@
+name: Unit Tests
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install gtest manually
+      run: sudo apt install libgtest-dev
+    - name: Run Unit Tests
+      run: make BOARD=pico TOP_DIR=. unittest
+
+    - name: Install cpplint
+      run: sudo apt install cpplint
+    - name: Run Linter
+      run: make BOARD=pico TOP_DIR=. lint
+
+    - name: Install doxygen
+      run: sudo apt install doxygen graphviz
+    - name: Test that docs passes
+      run: make BOARD=pico TOP_DIR=. docs
+
+    - name: Test Code Formatting
+      run: make BOARD=pico TOP_DIR=. test-style

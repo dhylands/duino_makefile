@@ -15,9 +15,6 @@ Q = @
 else
 Q =
 endif
-ifeq ($(BUILD_VERBOSE),0)
-$(info Use make V=1 or set BUILD_VERBOSE in your environment to increase build verbosity.)
-endif
 
 all:
 

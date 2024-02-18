@@ -4,5 +4,5 @@ CPPLINT_ARGS :=
 
 .PHONY: lint
 lint:
-	@echo "Linting source files ..."
-	@cpplint --linelength=100 --filter=-build/include_subdir,-readability/casting,-whitespace/parens --recursive $(CPPLINT_ARGS) --headers=h  --extensions=c,h,cpp,ino $(TOP_DIR)
+	$(ECHO) "Linting source files ..."
+	$(Q)cpplint --linelength=100 --filter=-build/include_subdir,-readability/casting,-whitespace/parens --recursive $(CPPLINT_ARGS) --headers=h  --extensions=c,h,cpp,ino $(TOP_DIR)
