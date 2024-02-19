@@ -19,6 +19,8 @@ VID 	= $(word 1, $(BOARD_$(BOARD)))
 PID 	= $(word 2, $(BOARD_$(BOARD)))
 FQBN 	= $(word 3, $(BOARD_$(BOARD)))
 
+MONITOR ?= python3 -m serial.tools.miniterm --raw $(PORT) 115200
+
 # NOTE: The arduino-cli buffers characters typed until a newline is entered
 #		so we use python's miniterm instead which sends each character as it's
 #		typed.
@@ -41,14 +43,14 @@ upload:
 		if [ -d "${RPI_DIR}" ]; then \
 			echo Compiling with BOARD = $(BOARD); \
 			$(COMPILE) --upload --port $(RPI_DIR) && \
-			python3 -m serial.tools.miniterm $(PORT) 115200; \
+			$(MONITOR); \
 		else \
 			echo "No RPi Pico found"; \
 		fi \
 	else \
 		echo Compiling with BOARD = $(BOARD); \
 		$(COMPILE) --upload --port $(PORT) &&  \
-		python3 -m serial.tools.miniterm $(PORT) 115200; \
+		$(MONITOR); \
 	fi
 
 # Fires up a terminal monitor to interact with the rp2040 over USB serial
@@ -60,7 +62,7 @@ monitor:
 		find_port.py -l; \
 		exit 1; \
 	fi
-	python3 -m serial.tools.miniterm $(PORT) 115200;
+	$(MONITOR)
 
 # Installs arduino-cli into ~/bin and does the setup for the rp2040
 .PHONY: install-cli
