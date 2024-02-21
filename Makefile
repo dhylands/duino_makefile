@@ -1,6 +1,7 @@
 DUINOMAKEFILE_DIR := $(patsubst %/,%,$(dir $(lastword $(MAKEFILE_LIST))))
 
 ifeq ($(TOP_DIR),)
+$(info PWD = $(PWD))
 $(error TOP_DIR must be specified in the library Makefile)
 endif
 
@@ -21,6 +22,7 @@ all:
 RM = rm
 ECHO = @echo
 MKDIR = mkdir
+MV = mv
 
 include $(DUINOMAKEFILE_DIR)/arduino-cli.mk
 include $(DUINOMAKEFILE_DIR)/build.mk

@@ -45,6 +45,7 @@ vscode-settings:
 	@echo 'arduino_cfg = {' >> ${MK_SETTINGS}
 	@echo '    "name": "Arduino",' >> ${MK_SETTINGS}
 	@echo '    "compilerPath": "$(firstword $(COMPILE_CMD))",' >> ${MK_SETTINGS}
+	@echo '    "intelliSenseMode": "linux-gcc-arm",' >> ${MK_SETTINGS}
 	@echo '    "includePath": [' >> ${MK_SETTINGS}
 	@for dir in $(INC_DIRS) $(PLATFORM_INCS); do \
 		if [ "$${dir#/}" != "$${dir}" ]; then \

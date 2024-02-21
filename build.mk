@@ -14,8 +14,12 @@ CXXFLAGS += -std=gnu++17
 BUILD_DIR = build
 BUILD ?= $(TOP_DIR)/$(BUILD_DIR)/$(BOARD)
 
+ifeq (,$(filter-out coverage,$(MAKECMDGOALS)))
+$(info setting DEBUG=1 due to coverage)
+DEBUG=1
+endif
+
 ifneq ($(DEBUG),)
-COMMON_FLAGS += -ggdb
 COMMON_FLAGS += -ggdb
 C_OPT = -O0
 BUILD := $(BUILD)/debug
@@ -72,8 +76,12 @@ lib: $(LIB)
 
 $(LIB): $(OBJS)
 	$(ECHO) "Creating library $(LIB) ..."
-
 	$(Q)$(AR) crs $(LIB) $(OBJS)
+
 clean:
 	$(ECHO) "Removing BUILD directory $(BUILD) ..."
 	$(Q)$(RM) -rf $(BUILD)
+
+clean-build:
+	$(ECHO) "Removing BUILD directory $(TOP_DIR)$(BUILD_DIR) ..."
+	$(Q)$(RM) -rf $(TOP_DIR)/$(BUILD)

@@ -1,4 +1,4 @@
-# Arduino-Makefile
+# DuinoMakefile
 Common makefile snippets shared between my Arduino projects
 
 [TOC]
