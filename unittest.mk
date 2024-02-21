@@ -20,6 +20,8 @@ unittest: $(BUILD)/test-runner
 	$(ECHO) "Running unit tests ..."
 	$(Q)$(BUILD)/test-runner
 
+.PHONY: coverage
+.NOTPARALLEL: coverage
 coverage: COMMON_FLAGS += --coverage
 coverage: LFLAGS += --coverage
 coverage: COVERAGE_DIR = $(TOP_DIR)/coverage
@@ -32,7 +34,7 @@ coverage: clean-build unittest
 	$(Q)gcovr -b $(BUILD)/src
 	$(Q)$(RM) -rf $(COVERAGE_DIR)
 	$(Q)$(MKDIR) $(COVERAGE_DIR)
-	$(Q)gcovr --html-detail $(COVERAGE_HTML) $(TOP_DIR)
+	$(Q)gcovr --html-details $(COVERAGE_HTML) $(TOP_DIR)
 	$(Q)$(RM) -rf $(BUILD)
 	$(Q)$(RM) -rf $(dir $(COVERAGE_DIR_FINAL))
 	$(Q)$(MKDIR) -p $(COVERAGE_DIR_FINAL)
