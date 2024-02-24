@@ -63,6 +63,10 @@ $(DEPS):
 
 include $(wildcard $(DEPS))
 
+DEP_LIB_INC_OPTS = $(addprefix -I $(TOP_DIR)/../,$(addsuffix /src,$(DEP_LIBS)))
+
+CXXFLAGS += $(DEP_LIB_INC_OPTS)
+
 .PRECIOUS: %/
 %/: ; $(Q)$(MKDIR) -p $@
 

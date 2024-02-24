@@ -14,11 +14,17 @@ $(TEST_DEPS):
 include $(wildcard $(TEST_DEPS))
 
 $(TEST_OBJS): | $(TEST_OBJ_DIRS)
-$(TEST_OBJS): CXXFLAGS += -I $(TOP_DIR)/src
+$(TEST_OBJS): CXXFLAGS += -I $(TOP_DIR)/src $(DEP_LIB_INC_OPTS)
+
+ifneq ($(DEP_LIBS),)
+DEP_LIBS_OPTS = $(addprefix, -l, $(DEP_LIBS))
+DEP_LIB_DIRS = $(addprefix -L $(TOP_DIR)/../, $(DEP_LIBS))
+endif
 
 $(BUILD)/test-runner: $(TEST_OBJS) $(LIB)
 	$(ECHO) "Linking $@ ..."
-	$(Q)$(CXX) $(LFLAGS) -o $@ $(TEST_OBJS) -L$(BUILD) -l$(THIS_LIB) -lgtest_main -lgtest
+	@echo THIS_LIB = $(THIS_LIB)
+	$(Q)$(CXX) $(LFLAGS) -o $@ $(TEST_OBJS) -L$(BUILD) $(DEP_LIB_DIRS) -l$(THIS_LIB) $(DEP_LIB_OPTS) -lgtest_main -lgtest -lpthread
 
 unittest: $(BUILD)/test-runner
 	$(ECHO) "Running unit tests ..."

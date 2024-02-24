@@ -57,11 +57,19 @@ vscode-settings:
 		fi \
 	done
 	@echo '    ],  # includePath' >> ${MK_SETTINGS}
-	@echo '    "defines": [' >> ${MK_SETTINGS}
-	@for cflag in $(DEFS); do \
+
+	echo '    "defines": [' >> ${MK_SETTINGS}
+	# We need to strip quotes out. For the most part this is fine. However
+	# it may also drop things like the following:
+	#     CXXFLAGS += VAR="abc def"
+	# And we'll only include `VAR=abc` into the defines. If this becomes an
+	# issuethen we'll need to implement this in a python script rather than
+	# try to use make/bash.
+	echo "DEFS = $($(subst ",,$(DEFS)))"
+	for cflag in $(subst ",,$(DEFS)); do \
 		echo '        "'$${cflag}'",' >> ${MK_SETTINGS}; \
 	done
-	@echo '    ],  # defines' >> ${MK_SETTINGS}
+	echo '    ],  # defines' >> ${MK_SETTINGS}
 	@echo '    "cStandard": "gnu11",' >> ${MK_SETTINGS}
 	@echo '    "cppStandard": "gnu++17",' >> ${MK_SETTINGS}
 	@echo '    "mergeConfigurations": True,' >> ${MK_SETTINGS}
