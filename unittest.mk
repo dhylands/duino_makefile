@@ -1,11 +1,15 @@
+# unittest.mk
 
-include $(TOP_DIR)/tests/files.mk
+include $(wildcard $(TOP_DIR)/tests/files.mk)
 
 TEST_OBJS = $(addprefix $(BUILD)/, $(TEST_SOURCES_CPP:%.cpp=%.o))
-
+TEST_DEPS := $(TEST_OBJS:%.o=%.d)
 TEST_OBJ_DIRS = $(sort $(dir $(TEST_OBJS)))
 
-TEST_DEPS := $(TEST_OBJS:%.o=%.d)
+ifeq ($(BUILD_VERBOSE),1)
+$(info TEST_OBJS = $(TEST_OBJS))
+endif
+
 $(TEST_DEPS):
 include $(wildcard $(TEST_DEPS))
 
@@ -14,7 +18,7 @@ $(TEST_OBJS): CXXFLAGS += -I $(TOP_DIR)/src
 
 $(BUILD)/test-runner: $(TEST_OBJS) $(LIB)
 	$(ECHO) "Linking $@ ..."
-	$(Q)$(CXX) $(LFLAGS) -o $@ $^ -lgtest_main -lgtest
+	$(Q)$(CXX) $(LFLAGS) -o $@ $(TEST_OBJS) -L$(BUILD) -l$(THIS_LIB) -lgtest_main -lgtest
 
 unittest: $(BUILD)/test-runner
 	$(ECHO) "Running unit tests ..."
@@ -30,8 +34,8 @@ coverage: COVERAGE_HTML = $(COVERAGE_DIR)/coverage.html
 coverage: COVERAGE_HTML_FINAL = $(COVERAGE_DIR_FINAL)/coverage.html
 coverage: clean-build unittest
 	@# We're only concerned with coverage in core source files.
-	$(Q)gcovr $(BUILD)/src
-	$(Q)gcovr -b $(BUILD)/src
+	$(Q)cd $(TOP_DIR) && gcovr $(BUILD_REL)/src
+	$(Q)cd $(TOP_DIR) && gcovr -b $(BUILD_REL)/src
 	$(Q)$(RM) -rf $(COVERAGE_DIR)
 	$(Q)$(MKDIR) $(COVERAGE_DIR)
 	$(Q)gcovr --html-details $(COVERAGE_HTML) $(TOP_DIR)

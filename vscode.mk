@@ -1,3 +1,5 @@
+# vscode.mk
+
 # vscode-settings will add the arduino-cli include files and defines into the
 # c_cpp_properties.json settings file, It will also setup 2 configurations,
 # one called Linux and one called Arduino. You can choose the active configuration

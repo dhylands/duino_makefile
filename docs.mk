@@ -1,3 +1,5 @@
+# docs.mk
+
 .PHONY: docs
 docs: DOXYGEN_CFG = $(DUINOMAKEFILE_DIR)/doxygen.cfg
 docs: export PROJECT_NAME = $(notdir $(abspath $(TOP_DIR)))

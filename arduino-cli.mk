@@ -1,3 +1,5 @@
+# arduino-cli.mk
+
 ifeq ($(BOARD),)
 include $(wildcard $(TOP_DIR)/board.mk)
 endif

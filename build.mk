@@ -1,3 +1,5 @@
+# build.mk
+
 CROSS_COMPILE ?=
 
 AS = $(CROSS_COMPILE)as
@@ -12,7 +14,8 @@ SIZE = $(CROSS_COMPILE)size
 CXXFLAGS += -std=gnu++17
 
 BUILD_DIR = build
-BUILD ?= $(TOP_DIR)/$(BUILD_DIR)/$(BOARD)
+BUILD_REL = $(BUILD_DIR)/$(BOARD)
+BUILD ?= $(TOP_DIR)/$(BUILD_REL)
 
 ifeq (,$(filter-out coverage,$(MAKECMDGOALS)))
 $(info setting DEBUG=1 due to coverage)
@@ -23,9 +26,11 @@ ifneq ($(DEBUG),)
 COMMON_FLAGS += -ggdb
 C_OPT = -O0
 BUILD := $(BUILD)/debug
+BUILD_REL := $(BUILD_REL)/debug
 else
 COPT += -Os
 BUILD := $(BUILD)/relase
+BUILD_REL := $(BUILD_REL)/relase
 endif
 COMMON_FLAGS += $(C_OPT)
 
@@ -41,7 +46,8 @@ COMMON_FLAGS += $(DEP_FLAGS)
 CFLAGSS += $(COMMON_FLAGS)
 CXXFLAGS += $(COMMON_FLAGS)
 
-include $(TOP_DIR)/src/files.mk
+include $(wildcard $(TOP_DIR)/src/files.mk)
+include $(wildcard $(TOP_DIR)/lib.mk)
 
 OBJS = $(addprefix $(BUILD)/, $(SOURCES_CPP:%.cpp=%.o))
 
@@ -60,7 +66,7 @@ include $(wildcard $(DEPS))
 .PRECIOUS: %/
 %/: ; $(Q)$(MKDIR) -p $@
 
-vpath %.cpp $(TOP_DIR)
+vpath %.cpp $(TOP_DIR) $(TOP_DIR)/src $(TOP_DIR)/tests
 
 $(BUILD)/%.o: %.cpp $(BUILD)/%.d | $(OBJ_DIRS)
 	$(call compile_cxx)
@@ -69,7 +75,7 @@ $(BUILD)/%.pp: %.cpp
 	$(ECHO) "PreProcess $<"
 	$(Q)$(CPP) $(CXXFLAGS) -Wp,-C,-dD,-dI -o $@ $<
 
-LIB_NAME = lib$(notdir $(abspath $(TOP_DIR))).a
+LIB_NAME = lib$(THIS_LIB).a
 LIB = $(BUILD)/$(LIB_NAME)
 .PHONY: lib
 lib: $(LIB)

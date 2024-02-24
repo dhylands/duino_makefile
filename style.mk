@@ -1,3 +1,5 @@
+# style.mk
+
 # Reformats the source code for a consistent look
 
 CLANGFORMAT_ARGS := -style='{BasedOnStyle: chromium, IndentWidth: 4, AccessModifierOffset: -3, AlignAfterOpenBracket: AlwaysBreak, BinPackParameters: false, ColumnLimit: 100, SortIncludes: false}'

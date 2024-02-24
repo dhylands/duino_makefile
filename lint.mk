@@ -1,3 +1,5 @@
+# lint.mk
+
 # Find common issues with the code
 
 CPPLINT_ARGS :=
