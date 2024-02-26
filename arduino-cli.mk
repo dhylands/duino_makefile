@@ -73,7 +73,8 @@ monitor:
 # Installs arduino-cli into ~/bin and does the setup for the rp2040
 .PHONY: install-cli
 install-cli:
-	cd ${HOME}; curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | sh
+	mkdir -p ~/bin
+	cd $(HOME) && curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | sh
 	$(ARDUINO_CLI) config init
 	$(ARDUINO_CLI) config add board_manager.additional_urls https://github.com/earlephilhower/arduino-pico/releases/download/global/package_rp2040_index.json
 	$(ARDUINO_CLI) core update-index
