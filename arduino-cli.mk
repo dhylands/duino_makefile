@@ -27,7 +27,11 @@ MONITOR ?= python3 -m serial.tools.miniterm --raw $(PORT) 115200
 #		so we use python's miniterm instead which sends each character as it's
 #		typed.
 
+ifeq ($(CI),true)
+ARDUINO_CLI ?= $(HOME)/bin/arduino-cli
+else
 ARDUINO_CLI ?= arduino-cli
+endif
 COMPILE = $(ARDUINO_CLI) compile --fqbn $(FQBN)
 
 .PHONY: compile
