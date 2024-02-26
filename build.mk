@@ -63,7 +63,9 @@ $(DEPS):
 
 include $(wildcard $(DEPS))
 
-DEP_LIB_INC_OPTS = $(addprefix -I $(TOP_DIR)/../,$(addsuffix /src,$(DEP_LIBS)))
+# DEP_LIB_INC_DIRS is relative to TOP_DIR
+DEP_LIB_INC_DIRS = $(addprefix ../,$(DEP_LIBS))
+DEP_LIB_INC_OPTS = $(addprefix -I $(TOP_DIR)/, $(DEP_LIB_INC_DIRS)) $(addprefix -I $(TOP_DIR)/, $(addsuffix /src,$(DEP_LIB_INC_DIRS)))
 
 CXXFLAGS += $(DEP_LIB_INC_OPTS)
 
@@ -84,7 +86,7 @@ LIB = $(BUILD)/$(LIB_NAME)
 .PHONY: lib
 lib: $(LIB)
 
-$(LIB): $(OBJS)
+$(LIB): $(OBJS) | $(BUILD)/
 	$(ECHO) "Creating library $(LIB) ..."
 	$(Q)$(AR) crs $(LIB) $(OBJS)
 

@@ -10,7 +10,7 @@
 vscode-settings: MK_SETTINGS = $(TOP_DIR)/.vscode/make_settings.py
 vscode-settings: VSCODE_SETTINGS = $(TOP_DIR)/.vscode/c_cpp_properties.json
 vscode-settings: COMPILE_CMD = $(shell $(COMPILE) --verbose 2> /dev/null | grep g++ | head -1)
-vscode-settings: INC_DIRS = src $(patsubst -I%,%,$(sort $(filter -I%, $(COMPILE_CMD))))
+vscode-settings: INC_DIRS = src $(DEP_LIB_INC_DIRS) $(patsubst -I%,%,$(sort $(filter -I%, $(COMPILE_CMD))))
 vscode-settings: HOST_COMPILER = $(shell which g++)
 vscode-settings: HOST_INC_DIRS = $(shell echo | $(HOST_COMPILER) -x c++ -E -Wp,-v - 2>&1 | grep -e '^ ')
 vscode-settings: DEFS = $(patsubst -D%,%,$(sort $(filter -D%, $(COMPILE_CMD))))

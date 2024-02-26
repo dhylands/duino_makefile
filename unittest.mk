@@ -21,6 +21,13 @@ DEP_LIBS_OPTS = $(addprefix, -l, $(DEP_LIBS))
 DEP_LIB_DIRS = $(addprefix -L $(TOP_DIR)/../, $(DEP_LIBS))
 endif
 
+ifeq ($(TEST_OBJS),)
+unittest:
+	$(ECHO) No source files to run unittest on
+
+coverage:
+	$(ECHO) No source files to run unittest on
+else
 $(BUILD)/test-runner: $(TEST_OBJS) $(LIB)
 	$(ECHO) "Linking $@ ..."
 	@echo THIS_LIB = $(THIS_LIB)
@@ -50,3 +57,4 @@ coverage: clean-build unittest
 	$(Q)$(MKDIR) -p $(COVERAGE_DIR_FINAL)
 	$(Q)$(MV) $(COVERAGE_DIR) $(dir $(COVERAGE_DIR_FINAL))
 	$(ECHO) "HTML coverage file is in $(COVERAGE_HTML_FINAL)"
+endif

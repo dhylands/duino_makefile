@@ -2,26 +2,33 @@ name: Unit Tests
 
 on: [push, pull_request]
 
+# DuinoLed has no source files that are unottest-able
+#
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
 
-    - name: Install gtest manually
-      run: sudo apt install libgtest-dev
-    - name: Run Unit Tests
-      run: make BOARD=pico TOP_DIR=. unittest
+    # Check that the code is styled properly
+
+    - name: Test Code Formatting
+      run: make TOP_DIR=. BOARD=pico test-style
+
+    # Run the linter
 
     - name: Install cpplint
       run: sudo apt install cpplint
+      working-directory: .
+
     - name: Run Linter
-      run: make BOARD=pico TOP_DIR=. lint
+      run: make TOP_DIR=. BOARD=pico lint
+
+    # Check that everything is documented
 
     - name: Install doxygen
       run: sudo apt install doxygen graphviz
-    - name: Test that docs passes
-      run: make BOARD=pico TOP_DIR=. docs
+      working-directory: .
 
-    - name: Test Code Formatting
-      run: make BOARD=pico TOP_DIR=. test-style
+    - name: Test that docs passes
+      run: make TOP_DIR=. BOARD=pico docs
