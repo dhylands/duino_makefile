@@ -1,5 +1,11 @@
 # build.mk
 
+SHELL := bash
+
+EMPTY :=
+SPACE := $(EMPTY) $(EMPTY)
+COMMA = ,
+
 CROSS_COMPILE ?=
 
 AS = $(CROSS_COMPILE)as
@@ -48,6 +54,8 @@ CXXFLAGS += $(COMMON_FLAGS)
 
 include $(wildcard $(TOP_DIR)/src/files.mk)
 include $(wildcard $(TOP_DIR)/lib.mk)
+
+$(info after lib.mk DEP_LIBS = $(DEP_LIBS))
 
 OBJS = $(addprefix $(BUILD)/, $(SOURCES_CPP:%.cpp=%.o))
 

@@ -24,8 +24,9 @@ ECHO = @echo
 MKDIR = mkdir
 MV = mv
 
-include $(DUINOMAKEFILE_DIR)/arduino-cli.mk
 include $(DUINOMAKEFILE_DIR)/build.mk
+
+include $(DUINOMAKEFILE_DIR)/arduino-cli.mk
 include $(DUINOMAKEFILE_DIR)/unittest.mk
 include $(DUINOMAKEFILE_DIR)/docs.mk
 include $(DUINOMAKEFILE_DIR)/style.mk

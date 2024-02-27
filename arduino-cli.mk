@@ -37,7 +37,7 @@ COMPILE = $(ARDUINO_CLI) compile --fqbn $(FQBN)
 .PHONY: compile
 compile:
 	$(ECHO) "Compiling for BOARD $(BOARD)"
-	$(COMPILE) --verbose
+	$(COMPILE)
 
 # Try detecting the RPi Pico via the serial port. If no serial port found,
 # look for the RPi Pico mounted as a filesystem.
@@ -71,12 +71,28 @@ monitor:
 	$(MONITOR)
 
 # Installs arduino-cli into ~/bin and does the setup for the rp2040
+# Note: that many unix distros add ~/bin to your PATH automatically if it exists when you login.
 .PHONY: install-cli
 install-cli:
+	@$(ECHO) "PATH = $(PATH)"
 	mkdir -p ~/bin
-	cd $(HOME) && curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | sh
+	cd $(HOME) && PATH=$(HOME)/bin:$(PATH) curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | sh
 	$(ARDUINO_CLI) config init
 	$(ARDUINO_CLI) config add board_manager.additional_urls https://github.com/earlephilhower/arduino-pico/releases/download/global/package_rp2040_index.json
+ifeq ($(CI),true)
+	$(ARDUINO_CLI) config set directories.user $(dir $(abspath $(PWD)/..))
+endif
 	$(ARDUINO_CLI) core update-index
 	$(ARDUINO_CLI) core install rp2040:rp2040
 
+# Extracts the depends= line from the library.properties file and converts spaces to colons and commas to spaces
+# Just before installing we convert the colon back to a space
+install-deps: ARDUINO_DEP_LIBS = $(subst $(COMMA),$(SPACE),$(subst $(SPACE),:,$(shell sed -n -e '/depends=/s/depends=//p' < $(TOP_DIR)/library.properties)))
+install-deps:
+	$(Q)if [ -z "$(ARDUINO_DEP_LIBS)" ]; then \
+		echo No library dependencies to install; \
+	else \
+		for dep_lib in $(ARDUINO_DEP_LIBS); do \
+			$(ARDUINO_CLI) lib install "$${dep_lib//:/ }"; \
+		done; \
+	fi
