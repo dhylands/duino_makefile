@@ -5,7 +5,7 @@ docs: DOXYGEN_CFG = $(DUINOMAKEFILE_DIR)/doxygen.cfg
 docs: export PROJECT_NAME = $(notdir $(abspath $(TOP_DIR)))
 docs: export PROJECT_NUMBER = $(shell git describe --tags --dirty --always)
 docs: export PROJECT_BRIEF = $(patsubst sentence=%,%,$(shell grep sentence $(TOP_DIR)/library.properties))
-docs: export OUTPUT_DIRECTORY = $(BUILD_DIR)/docs
+docs: export OUTPUT_DIRECTORY = $(BUILD)/docs
 docs:
 	$(ECHO) "Generating HTNL documentation ..."
 	$(Q)cd $(TOP_DIR) && \

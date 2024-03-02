@@ -19,9 +19,7 @@ SIZE = $(CROSS_COMPILE)size
 
 CXXFLAGS += -std=gnu++17
 
-BUILD_DIR = build
-BUILD_REL = $(BUILD_DIR)/$(BOARD)
-BUILD ?= $(TOP_DIR)/$(BUILD_REL)
+BUILD = $(TOP_DIR)/build/$(BOARD)
 
 ifeq (,$(filter-out coverage,$(MAKECMDGOALS)))
 $(info setting DEBUG=1 due to coverage)
@@ -32,12 +30,11 @@ ifneq ($(DEBUG),)
 COMMON_FLAGS += -ggdb
 C_OPT = -O0
 BUILD := $(BUILD)/debug
-BUILD_REL := $(BUILD_REL)/debug
 else
 COPT += -Os
-BUILD := $(BUILD)/relase
-BUILD_REL := $(BUILD_REL)/relase
+BUILD := $(BUILD)/release
 endif
+
 COMMON_FLAGS += $(C_OPT)
 
 COMMON_FLAGS += -Wall -Werror -Wextra \
@@ -55,48 +52,60 @@ CXXFLAGS += $(COMMON_FLAGS)
 include $(wildcard $(TOP_DIR)/src/files.mk)
 include $(wildcard $(TOP_DIR)/lib.mk)
 
-$(info after lib.mk DEP_LIBS = $(DEP_LIBS))
-
 OBJS = $(addprefix $(BUILD)/, $(SOURCES_CPP:%.cpp=%.o))
-
 OBJ_DIRS = $(sort $(dir $(OBJS)))
 
-define compile_cxx
-$(ECHO) "Compiling $<"
-$(Q)$(CXX) $(CXXFLAGS) -c -o $@ $<
-endef
-
-DEPS := $(OBJS:%.o=%.d)
+DEPS = $(OBJS:%.o=%.d)
 $(DEPS):
 
 include $(wildcard $(DEPS))
 
 # DEP_LIB_INC_DIRS is relative to TOP_DIR
-DEP_LIB_INC_DIRS = $(addprefix ../,$(DEP_LIBS))
-DEP_LIB_INC_OPTS = $(addprefix -I $(TOP_DIR)/, $(DEP_LIB_INC_DIRS)) $(addprefix -I $(TOP_DIR)/, $(addsuffix /src,$(DEP_LIB_INC_DIRS)))
+DEP_LIB_INC_DIRS = $(addprefix ../,$(DEP_LIBS)) $(addprefix ../,$(addsuffix /src,$(DEP_LIBS)))
+DEP_LIB_INC_OPTS = $(addprefix -I $(TOP_DIR)/, $(DEP_LIB_INC_DIRS))
 
 CXXFLAGS += $(DEP_LIB_INC_OPTS)
 
 .PRECIOUS: %/
 %/: ; $(Q)$(MKDIR) -p $@
 
-vpath %.cpp $(TOP_DIR) $(TOP_DIR)/src $(TOP_DIR)/tests
+ifneq ($(DEP_LIBS),)
 
-$(BUILD)/%.o: %.cpp $(BUILD)/%.d | $(OBJ_DIRS)
-	$(call compile_cxx)
+DEP_LIBS_DIRS = $(foreach lib,$(DEP_LIBS),$(TOP_DIR)/../$(lib))
+DEP_LIBS_SRC_DIRS = $(addsuffix /src,$(DEP_LIBS_DIRS))
+DEP_LIBS_TESTS_DIRS = $(addsuffix /tests,$(DEP_LIBS_DIRS))
+DEP_LIBS_FILES_MK = $(addsuffix /files.mk,$(DEP_LIBS_SRC_DIRS))
+
+ifeq ($(BUILD_VERBOSE),1)
+$(info DEP_LIBS = $(DEP_LIBS))
+$(info DEP_LIBS_DIRS = $(DEP_LIBS_DIRS))
+$(info DEP_LIBS_SRC_DIRS = $(DEP_LIBS_SRC_DIRS))
+$(info DEP_LIBS_TESTS_DIRS = $(DEP_LIBS_TESTS_DIRS))
+$(info DEP_LIBS_FILES_MK = $(DEP_LIBS_FILES_MK))
+endif  # BUILD_BERBOSE
+
+$(info including $(DEP_LIBS_FILES_MK))
+include $(DEP_LIBS_FILES_MK)
+
+endif  # DEP_LIBS
+
+ifeq ($(BUILD_VERBOSE),1)
+$(info BOARD = $(BOARD))
+$(info BUILD = $(BUILD))
+$(info SOURCES_CPP = $(SOURCES_CPP))
+$(info OBJS = $(OBJS))
+$(info DEPS = $(DEPS))
+endif
+
+vpath %.cpp $(TOP_DIR)/src $(TOP_DIR)/tests $(DEP_LIBS_SRC_DIRS) $(DEP_LIBS_TESTS_DIRS)
+
+$(BUILD)/%.o: %.cpp | $(OBJ_DIRS)
+	$(ECHO) "Compiling $<"
+	$(Q)$(CXX) $(CXXFLAGS) -c -o $@ $<
 
 $(BUILD)/%.pp: %.cpp
 	$(ECHO) "PreProcess $<"
 	$(Q)$(CPP) $(CXXFLAGS) -Wp,-C,-dD,-dI -o $@ $<
-
-LIB_NAME = lib$(THIS_LIB).a
-LIB = $(BUILD)/$(LIB_NAME)
-.PHONY: lib
-lib: $(LIB)
-
-$(LIB): $(OBJS) | $(BUILD)/
-	$(ECHO) "Creating library $(LIB) ..."
-	$(Q)$(AR) crs $(LIB) $(OBJS)
 
 clean:
 	$(ECHO) "Removing BUILD directory $(BUILD) ..."

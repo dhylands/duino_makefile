@@ -24,6 +24,13 @@ ECHO = @echo
 MKDIR = mkdir
 MV = mv
 
+ifeq ($(BOARD),)
+include $(wildcard $(TOP_DIR)/board.mk)
+endif
+ifeq ($(BOARD),)
+$(error BOARD not defined - pass it on the command line or create a board.mk file)
+endif
+
 include $(DUINOMAKEFILE_DIR)/build.mk
 
 include $(DUINOMAKEFILE_DIR)/arduino-cli.mk

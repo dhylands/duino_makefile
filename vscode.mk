@@ -9,14 +9,14 @@
 .PHONY: vscode-settings
 vscode-settings: MK_SETTINGS = $(TOP_DIR)/.vscode/make_settings.py
 vscode-settings: VSCODE_SETTINGS = $(TOP_DIR)/.vscode/c_cpp_properties.json
-vscode-settings: COMPILE_CMD = $(shell $(COMPILE) --verbose 2> /dev/null | grep g++ | head -1)
-vscode-settings: INC_DIRS = src $(DEP_LIB_INC_DIRS) $(patsubst -I%,%,$(sort $(filter -I%, $(COMPILE_CMD))))
+vscode-settings: CLI_COMPILE_CMD = $(shell $(COMPILE) --verbose 2> /dev/null | grep g++ | head -1)
+vscode-settings: CLI_INC_DIRS = src $(DEP_LIB_INC_DIRS) $(patsubst -I%,%,$(sort $(filter -I%, $(CLI_COMPILE_CMD))))
+vscode-settings: CLI_DEFS = $(patsubst -D%,%,$(sort $(filter -D%, $(CLI_COMPILE_CMD))))
+vscode-settings: CLI_IPREFIX = $(patsubst -iprefix%,%,$(filter -iprefix%, $(CLI_COMPILE_CMD)))
+vscode-settings: CLI_PLATFORM_INCS = $(patsubst -iwithprefixbefore/%,$(CLI_IPREFIX)%,$(shell cat $(patsubst @%,%,$(filter @%,$(CLI_COMPILE_CMD))) /dev/null))
 vscode-settings: HOST_COMPILER = $(shell which g++)
 vscode-settings: HOST_INC_DIRS = $(shell echo | $(HOST_COMPILER) -x c++ -E -Wp,-v - 2>&1 | grep -e '^ ')
-vscode-settings: DEFS = $(patsubst -D%,%,$(sort $(filter -D%, $(COMPILE_CMD))))
-vscode-settings: IPREFIX = $(patsubst -iprefix%,%,$(filter -iprefix%, $(COMPILE_CMD)))
-vscode-settings: PLATFORM_INCS = $(patsubst -iwithprefixbefore/%,$(IPREFIX)%,$(shell cat $(patsubst @%,%,$(filter @%,$(COMPILE_CMD))) /dev/null))
-vscode-settings: LIBRARY_INCS = $(abspath $(TOP_DIR)/src)
+vscode-settings: HOST_LIBRARY_INCS = $(abspath $(addprefix $(TOP_DIR)/, src $(DEP_LIB_INC_DIRS)))
 vscode-settings:
 	@echo "Updating ${VSCODE_SETTINGS} ..."
 	@# We generate a python dictionary (which allows trailing commas) and then
@@ -34,7 +34,7 @@ vscode-settings:
 	@echo '    "compilerArgs": ["-m64"],' >> ${MK_SETTINGS}
 	@echo '    "intelliSenseMode": "linux-gcc-x64",' >> ${MK_SETTINGS}
 	@echo '    "includePath": [' >> ${MK_SETTINGS}
-	@for dir in $(HOST_INC_DIRS) $(LIBRARY_INCS); do \
+	@for dir in $(HOST_INC_DIRS) $(HOST_LIBRARY_INCS); do \
 		echo '        "'$${dir}'",' >> ${MK_SETTINGS}; \
 	done
 	@echo '    ],  # includePath' >> ${MK_SETTINGS}
@@ -46,10 +46,10 @@ vscode-settings:
 
 	@echo 'arduino_cfg = {' >> ${MK_SETTINGS}
 	@echo '    "name": "Arduino",' >> ${MK_SETTINGS}
-	@echo '    "compilerPath": "$(firstword $(COMPILE_CMD))",' >> ${MK_SETTINGS}
+	@echo '    "compilerPath": "$(firstword $(CLI_COMPILE_CMD))",' >> ${MK_SETTINGS}
 	@echo '    "intelliSenseMode": "linux-gcc-arm",' >> ${MK_SETTINGS}
 	@echo '    "includePath": [' >> ${MK_SETTINGS}
-	@for dir in $(INC_DIRS) $(PLATFORM_INCS); do \
+	@for dir in $(CLI_INC_DIRS) $(CLI_PLATFORM_INCS); do \
 		if [ "$${dir#/}" != "$${dir}" ]; then \
 		    echo '        "'$${dir}'",' >> ${MK_SETTINGS}; \
 		else \
@@ -65,8 +65,8 @@ vscode-settings:
 	# And we'll only include `VAR=abc` into the defines. If this becomes an
 	# issuethen we'll need to implement this in a python script rather than
 	# try to use make/bash.
-	echo "DEFS = $($(subst ",,$(DEFS)))"
-	for cflag in $(subst ",,$(DEFS)); do \
+	echo "DEFS = $($(subst ",,$(CLI_DEFS)))"
+	for cflag in $(subst ",,$(CLI_DEFS)); do \
 		echo '        "'$${cflag}'",' >> ${MK_SETTINGS}; \
 	done
 	echo '    ],  # defines' >> ${MK_SETTINGS}

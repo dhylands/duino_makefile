@@ -1,12 +1,5 @@
 # arduino-cli.mk
 
-ifeq ($(BOARD),)
-include $(wildcard $(TOP_DIR)/board.mk)
-endif
-ifeq ($(BOARD),)
-$(error BOARD not defined - pass it on the command line or create a board.mk file)
-endif
-
 #     BOARD       VID    PID    FQBN - Fully Qualified Board Name
 #     ---------   ------ ------ -------------------------------------------
 BOARD_pico 	    = 0x2e8a 0x000a rp2040:rp2040:rpipico
