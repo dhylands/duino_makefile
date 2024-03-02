@@ -17,6 +17,10 @@ else
 Q =
 endif
 
+ifeq ($(BUILD_VERBOSE),1)
+$(info TOP_DIR = $(TOP_DIR))
+endif
+
 all:
 
 RM = rm
@@ -37,5 +41,6 @@ include $(DUINOMAKEFILE_DIR)/arduino-cli.mk
 include $(DUINOMAKEFILE_DIR)/unittest.mk
 include $(DUINOMAKEFILE_DIR)/docs.mk
 include $(DUINOMAKEFILE_DIR)/style.mk
+include $(DUINOMAKEFILE_DIR)/tools.mk
 include $(DUINOMAKEFILE_DIR)/lint.mk
 include $(DUINOMAKEFILE_DIR)/vscode.mk

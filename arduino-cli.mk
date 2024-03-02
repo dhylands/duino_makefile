@@ -14,7 +14,8 @@ VID 	= $(word 1, $(BOARD_$(BOARD)))
 PID 	= $(word 2, $(BOARD_$(BOARD)))
 FQBN 	= $(word 3, $(BOARD_$(BOARD)))
 
-MONITOR ?= python3 -m serial.tools.miniterm --raw $(PORT) 115200
+#MONITOR ?= python3 -m serial.tools.miniterm --raw $(PORT) 115200
+MONITOR ?= $(ARDUINO_CLI) monitor --raw --port $(PORT)
 
 # NOTE: The arduino-cli buffers characters typed until a newline is entered
 #		so we use python's miniterm instead which sends each character as it's
@@ -25,7 +26,13 @@ ARDUINO_CLI ?= $(HOME)/bin/arduino-cli
 else
 ARDUINO_CLI ?= arduino-cli
 endif
-COMPILE = $(ARDUINO_CLI) compile --fqbn $(FQBN)
+
+ifeq ($(BUILD_VERBOSE),1)
+CLI_VERBOSE = --verbose
+else
+CLI_VERBOSE =
+endif
+COMPILE = $(ARDUINO_CLI) compile $(CLI_VERBOSE) --fqbn $(FQBN)
 
 .PHONY: compile
 compile:
@@ -67,7 +74,7 @@ monitor:
 # Note: that many unix distros add ~/bin to your PATH automatically if it exists when you login.
 .PHONY: install-cli
 install-cli:
-	@$(ECHO) "PATH = $(PATH)"
+	$(ECHO) "===== Installing arduino-cli ====="
 	mkdir -p ~/bin
 	cd $(HOME) && PATH=$(HOME)/bin:$(PATH) curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | sh
 	$(ARDUINO_CLI) config init

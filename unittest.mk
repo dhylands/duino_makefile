@@ -31,7 +31,7 @@ $(BUILD)/test-runner: $(TEST_OBJS) $(OBJS)
 	$(Q)$(CXX) $(LFLAGS) -o $@ $(TEST_OBJS) $(OBJS) -lgtest_main -lgtest -lpthread
 
 unittest: $(BUILD)/test-runner
-	$(ECHO) "Running unit tests ..."
+	$(ECHO) "===== Running unit tests ====="
 	$(Q)$(BUILD)/test-runner
 
 .PHONY: coverage
@@ -44,9 +44,10 @@ coverage: COVERAGE_DIR_FINAL = $(BUILD)/$(notdir $(COVERAGE_DIR))
 coverage: COVERAGE_HTML = $(COVERAGE_DIR)/coverage.html
 coverage: COVERAGE_HTML_FINAL = $(COVERAGE_DIR_FINAL)/coverage.html
 coverage: clean-build unittest
+	$(ECHO) "===== coverage ====="
 	@# We're only concerned with coverage in core source files.
 	$(Q)cd $(TOP_DIR) && gcovr $(COVERAGE_EXCLUDE) $(BUILD_REL)
-	$(Q)cd $(TOP_DIR) && gcovr $(COVERAGE_EXCLUDE) -b $(BUILD_REL)
+	$(Q)cd $(TOP_DIR) && gcovr $(COVERAGE_EXCLUDE) --txt-metric branch $(BUILD_REL)
 	$(Q)$(RM) -rf $(COVERAGE_DIR)
 	$(Q)$(MKDIR) $(COVERAGE_DIR)
 	$(Q)gcovr $(COVERAGE_EXCLUDE) --html-details $(COVERAGE_HTML) $(TOP_DIR)

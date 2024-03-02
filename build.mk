@@ -44,6 +44,7 @@ COMMON_FLAGS += -Wall -Werror -Wextra \
 # We let the comiler generate the dependency files.
 DEP_FLAGS += -MT $@ -MMD -MP -MF ${@:%.o=%.d}
 
+COMMON_FLAGS += -I $(TOP_DIR)/src
 COMMON_FLAGS += $(DEP_FLAGS)
 
 CFLAGSS += $(COMMON_FLAGS)

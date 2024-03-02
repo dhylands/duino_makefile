@@ -10,25 +10,11 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    # Check that the code is styled properly
+    - name: Install tools
+      run: make TOP_DIR=. BOARD=pico install-tools
 
-    - name: Test Code Formatting
-      run: make TOP_DIR=. BOARD=pico test-style
+    - name: Run tools (test-style, lint, docs, unittest, coverage)
+      run: make TOP_DIR=. BOARD=pico run-tools
 
-    # Run the linter
-
-    - name: Install cpplint
-      run: sudo apt install cpplint
-      working-directory: .
-
-    - name: Run Linter
-      run: make TOP_DIR=. BOARD=pico lint
-
-    # Check that everything is documented
-
-    - name: Install doxygen
-      run: sudo apt install doxygen graphviz
-      working-directory: .
-
-    - name: Test that docs passes
-      run: make TOP_DIR=. BOARD=pico docs
+    - name: Make sure all of the examples compile
+      run: make TOP_DIR=. BOARD=pico compile-examples
