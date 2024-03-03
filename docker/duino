@@ -1,0 +1,67 @@
+#!/bin/bash
+#
+# Install this script somewhere in your PATH.
+#
+# Now you can do something like:
+#
+#   cd ~/Arduino/libraries/DuinoLog
+#   duino make style
+#
+# and it will run `make style` inside the docker container.
+
+set -Eeuo pipefail
+
+# By default we assume that the name of this script is the prefix name of the image to run.
+PGM_NAME=$(basename $0)
+IMAGE_NAME=dhylands/duino:latest
+
+function usage {
+    cat <<EOF
+Usage: ${PGM_NAME} [-h][-i IMAGE-NAME] commands
+Where:
+    -d              Enables debug tracing of this script
+    -i IMAGE_NAME   Specifies the docker image_name to run
+    -h              Prints this help
+EOF
+}
+
+DEBUG=0
+EXTRA_ENV=""
+while getopts ":di:t:h" opt; do
+    case ${opt} in
+        d)
+            DEBUG=1
+            set -x
+            EXTRA_ENV="--env DEBUG=true"
+            ;;
+        i)
+            IMAGE_NAME=${OPTARG}
+            ;;
+        h)
+            usage
+            exit 1
+            ;;
+
+    esac
+done
+shift $(( ${OPTIND} - 1 ))
+
+USER_PWD=${PWD}
+
+TTY_OPT=""
+if [ -t 0 ]; then
+    # We only want to pass in -ti when stdin is a TTY. When running from crontab
+    # or redirecting from a file, then we don't want the -ti option.
+    TTY_OPT=-ti
+fi
+
+docker run --rm ${TTY_OPT} \
+    -v ${HOME}/Arduino:${HOME}/Arduino \
+    ${EXTRA_ENV} \
+    --env "USER_UID=$(id -u)" \
+    --env "USER_GID=$(id -g)" \
+    --env "USER_HOME=${HOME}" \
+    --env "USER_NAME=$(id -n -u)" \
+    --env "USER_GROUP=$(id -n -g)" \
+    --env "USER_PWD=${USER_PWD}" \
+    "${IMAGE_NAME}" "$@"
