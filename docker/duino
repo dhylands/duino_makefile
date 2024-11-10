@@ -4,7 +4,7 @@
 #
 # Now you can do something like:
 #
-#   cd ~/Arduino/libraries/DuinoLog
+#   cd ~/Arduino/libraries/duino_log
 #   duino make style
 #
 # and it will run `make style` inside the docker container.

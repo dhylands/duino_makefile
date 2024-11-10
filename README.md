@@ -1,11 +1,11 @@
-# DuinoMakefile
+# duino_makefile
 Common makefile snippets shared between my Arduino projects
 
 [TOC]
 
 # Providing a BOARD
 
-A board must be provided for all invocations of `make`. Thid can either
+A board must be provided for all invocations of `make`. This can either
 be specified in a board.mk located in the top of the repository, or can
 be specified on the command line.
 
@@ -21,14 +21,14 @@ make BOARD=picow upload
 
 # Top level Makefile in a library
 
-Outside of the DuinoMakefile repository, the top level `Makefile` needs to include the
-DuinoMakefile's top-level Makefile, so assuming that the DuinoMakefile repository is beside
+Outside of the duino_makefile repository, the top level `Makefile` needs to include the
+duino_makefile's top-level Makefile, so assuming that the duino_makefile repository is beside
 the library in question, it's top level Makefile might look like:
 ```
 THIS_DIR := $(patsubst %/,%,$(dir $(lastword $(MAKEFILE_LIST))))
 TOP_DIR ?= $(THIS_DIR)
 
-DUINO_MAKEFILE ?= $(THIS_DIR)/../DuinoMakefile
+DUINO_MAKEFILE ?= $(THIS_DIR)/../duino_makefile
 
 ifeq ("$(wildcard $(DUINO_MAKEFILE)/Makefile)","")
 $(error Unable to open $(DUINO_MAKEFILE)/Makefile)
@@ -52,12 +52,12 @@ include $(TOP_DIR)/Makefile
 
 # Predefined targets
 
-The DuinoMakefile provides the following targets:
+The duino_makefile provides the following targets:
 - compile
 - upload
 - monitor
 - install-cli
-- lib
+- program
 - clean
 - unittest
 - style
@@ -111,15 +111,26 @@ if your program is already running and doesn't need to be uploaded.
 
 ## lib
 
-The `lib` target will build the library using the HOST compiler, rather than arduino-cli. This builds the library used by the `unittest`. This is useful when trying to fix compile errors.
+The `lib` target will build the library using the HOST compiler, rather
+than arduino-cli. This builds the library used by the `unittest`. This
+is useful when trying to fix compile errors.
+
+## program
+
+The `program` target will compile the current `PGM_NAME` for the host.
+These programs typically live in a subfolder of the programs directory
+and the Makefile will set PGM_NAME. These programs are often used for
+testing aspects of the Arduino code, but while running on the host.
 
 ## clean
 
-The `clean` target removes all of the generated files (which are found in the `build` directory).
+The `clean` target removes all of the generated files (which are found
+in the `build` directory).
 
 ## unittest
 
-The `unittest` target runs all of the unit tests found in the `tests` directory.
+The `unittest` target runs all of the unit tests found in the
+`tests` directory.
 
 ## style
 
@@ -127,14 +138,22 @@ The `style`  command reformats the source code.
 
 ## lint
 
-The `lint` command runs a linter on the source, which identifies common issues, many stylistic.
+The `lint` command runs a linter on the source, which identifies
+common issues, many stylistic.
 
 ## docs
 
-The `docs` command extracts documentation from the source code using doxygen. The generated source can be found in `$(TOP_DIR)/build/docs/html/index.html`
+The `docs` command extracts documentation from the source code using
+doxygen. The generated source can be found in
+`$(TOP_DIR)/build/docs/html/index.html`
 
 ## vscode-settings
 
-The `vscode-settings` target will generate a `$(TOP_DIR)/.vscode/c_cpp_properties.json` file which sets up 2 compiler configurations. The first is called `Linux` and is useful for examining the source files
-as seen by the compiler for unit testsing. The second is called `Arduino` and sets up all of the include paths and defines that `arduino-cli` uses. You can switch between compile configurations by selecting `Linux` or `Arduino` in the bottom right of the status bar in
-VS Code.
+The `vscode-settings` target will generate a
+`$(TOP_DIR)/.vscode/c_cpp_properties.json` file which sets up 2
+compiler configurations. The first is called `Linux` and is useful
+for examining the source files as seen by the compiler for unit
+testsing. The second is called `Arduino` and sets up all of the include
+paths and defines that `arduino-cli` uses. You can switch between
+compile configurations by selecting `Linux` or `Arduino` in the
+bottom right of the status bar in VS Code.

@@ -18,6 +18,9 @@ vscode-settings: HOST_COMPILER = $(shell which g++)
 vscode-settings: HOST_INC_DIRS = $(shell echo | $(HOST_COMPILER) -x c++ -E -Wp,-v - 2>&1 | grep -e '^ ')
 vscode-settings: HOST_LIBRARY_INCS = $(abspath $(addprefix $(TOP_DIR)/, src $(DEP_LIB_INC_DIRS)))
 vscode-settings:
+	@echo "CLI_INC_DIRS = ${CLI_INC_DIRS}"
+	@echo "CLI_COMPILE_CMD = ${CLI_COMPILE_CMD}"
+	@echo "CLI_PLATFORM_INCS = ${CLI_PLATFORM_INCS}"
 	@echo "Updating ${VSCODE_SETTINGS} ..."
 	@# We generate a python dictionary (which allows trailing commas) and then
 	@# convert the dictionary to json
@@ -25,8 +28,10 @@ vscode-settings:
 		mkdir -p $(dir ${VSCODE_SETTINGS}); \
 		(echo '{}' > ${VSCODE_SETTINGS}); \
 	fi
-	@echo 'import json' > ${MK_SETTINGS}
-	@echo 'd = json.loads(open("${VSCODE_SETTINGS}").read())' >> ${MK_SETTINGS}
+	@echo '"""Generates VSCode settings."""' > ${MK_SETTINGS}
+	@echo 'import json' >> ${MK_SETTINGS}
+	@echo 'with open("${VSCODE_SETTINGS}", encoding="utf-8") as f:' >> ${MK_SETTINGS}
+	@echo '    d = json.loads(f.read())' >> ${MK_SETTINGS}
 
 	@echo 'linux_cfg = {' >> ${MK_SETTINGS}
 	@echo '    "name": "Linux",' >> ${MK_SETTINGS}

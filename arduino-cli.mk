@@ -1,10 +1,11 @@
 # arduino-cli.mk
 
-#     BOARD       VID    PID    FQBN - Fully Qualified Board Name
-#     ---------   ------ ------ -------------------------------------------
-BOARD_pico 	    = 0x2e8a 0x000a rp2040:rp2040:rpipico
-BOARD_picow	    = 0x2e8a 0xf00a rp2040:rp2040:rpipicow
-BOARD_zero		= 0x2e8a 0x0003 rp2040:rp2040:waveshare_rp2040_zero
+#     BOARD        VID    PID    FQBN - Fully Qualified Board Name
+#     ---------    ------ ------ -------------------------------------------
+BOARD_pico 	     = 0x2e8a 0x000a rp2040:rp2040:rpipico
+BOARD_picow	     = 0x2e8a 0xf00a rp2040:rp2040:rpipicow
+BOARD_zero		 = 0x2e8a 0x0003 rp2040:rp2040:waveshare_rp2040_zero
+BOARD_esp32thing = 0x0403 0x6015 esp32:esp32:esp32thing
 
 ifeq ($BOARD_$(BOARD),)
 $(error No BOARD definition found for $(BOARD))
@@ -15,7 +16,7 @@ PID 	= $(word 2, $(BOARD_$(BOARD)))
 FQBN 	= $(word 3, $(BOARD_$(BOARD)))
 
 #MONITOR ?= python3 -m serial.tools.miniterm --raw $(PORT) 115200
-MONITOR ?= $(ARDUINO_CLI) monitor --raw --port $(PORT)
+MONITOR ?= $(ARDUINO_CLI) monitor --raw --port $(PORT) --config baudrate=$(BAUD_RATE)
 
 # NOTE: The arduino-cli buffers characters typed until a newline is entered
 #		so we use python's miniterm instead which sends each character as it's
@@ -43,6 +44,7 @@ compile:
 # look for the RPi Pico mounted as a filesystem.
 .PHONY: upload
 upload: PORT = $(shell find_port.py --vid $(VID) --pid $(PID))
+upload: BAUD_RATE = 115200
 upload: RPI_DIR = /media/$(USER)/RPI-RP2
 upload:
 	@if [ -z "$(PORT)" ]; then \
@@ -77,7 +79,9 @@ install-cli:
 	$(ECHO) "===== Installing arduino-cli ====="
 	mkdir -p ~/bin
 	cd $(HOME) && PATH=$(HOME)/bin:$(PATH) curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | sh
-	$(ARDUINO_CLI) config init
+	$(ARDUINO_CLI) config dump > old-config.txt
+	$(ARDUINO_CLI) config init --overwrite
+	$(ARDUINO_CLI) config dump > new-config.txt
 	$(ARDUINO_CLI) config add board_manager.additional_urls https://github.com/earlephilhower/arduino-pico/releases/download/global/package_rp2040_index.json
 ifeq ($(CI),true)
 	$(ARDUINO_CLI) config set directories.user $(dir $(abspath $(PWD)/..))

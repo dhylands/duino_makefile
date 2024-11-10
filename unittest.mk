@@ -16,7 +16,7 @@ include $(wildcard $(TEST_DEPS))
 $(TEST_OBJS): | $(TEST_OBJ_DIRS)
 $(TEST_OBJS): CXXFLAGS += -I $(TOP_DIR)/src $(DEP_LIB_INC_OPTS)
 
-# DuinoLog => $(TOP_DIR)/DuinoLog/$(BUILD_REL)/libDuinoLog.a
+# duino_log => $(TOP_DIR)/duino_log/$(BUILD_REL)/libduino_log.a
 
 ifeq ($(TEST_OBJS),)
 unittest:
@@ -31,8 +31,8 @@ $(BUILD)/test-runner: $(TEST_OBJS) $(OBJS)
 	$(Q)$(CXX) $(LFLAGS) -o $@ $(TEST_OBJS) $(OBJS) -lgtest_main -lgtest -lpthread
 
 unittest: $(BUILD)/test-runner
-	$(ECHO) "===== Running unit tests ====="
-	$(Q)$(BUILD)/test-runner
+	$(ECHO) "===== Running $(BUILD)/test-runner ====="
+	$(BUILD)/test-runner $(TEST_ARGS)
 
 .PHONY: coverage
 .NOTPARALLEL: coverage
@@ -58,3 +58,6 @@ coverage: clean-build unittest
 	$(ECHO) "HTML coverage file is in $(COVERAGE_HTML_FINAL)"
 
 endif  # TEST_OBJS
+
+# To run a specific test do somethhing like:
+# make unittest TEST_ARGS='--gtest_filter=DummyTest.*'

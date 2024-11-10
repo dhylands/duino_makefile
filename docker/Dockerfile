@@ -20,8 +20,8 @@ RUN apt-get update \
 RUN echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
 WORKDIR /root
-RUN git clone https://github.com/dhylands/DuinoMakefile
-WORKDIR /root/DuinoMakefile
+RUN git clone https://github.com/dhylands/duino_makefile
+WORKDIR /root/duino_makefile
 ENV PATH="/root/bin:${PATH}"
 RUN make TOP_DIR=. BOARD=pico install-tools V=1
 

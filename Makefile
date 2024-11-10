@@ -1,5 +1,9 @@
 DUINOMAKEFILE_DIR := $(patsubst %/,%,$(dir $(lastword $(MAKEFILE_LIST))))
 
+# LIB_DIR is the directory that the Arduino libraries are stored it.
+# It is expected to be the directory that duino_makefile is contained in.
+LIB_DIR ?= $(dir $(DUINOMAKEFILE_DIR))
+
 ifeq ($(TOP_DIR),)
 $(info PWD = $(PWD))
 $(error TOP_DIR must be specified in the library Makefile)

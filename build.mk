@@ -62,8 +62,8 @@ $(DEPS):
 include $(wildcard $(DEPS))
 
 # DEP_LIB_INC_DIRS is relative to TOP_DIR
-DEP_LIB_INC_DIRS = $(addprefix ../,$(DEP_LIBS)) $(addprefix ../,$(addsuffix /src,$(DEP_LIBS)))
-DEP_LIB_INC_OPTS = $(addprefix -I $(TOP_DIR)/, $(DEP_LIB_INC_DIRS))
+DEP_LIB_INC_DIRS = $(addprefix $(LIB_DIR)/,$(DEP_LIBS)) $(addprefix $(LIB_DIR)/,$(addsuffix /src,$(DEP_LIBS)))
+DEP_LIB_INC_OPTS = $(addprefix -I, $(DEP_LIB_INC_DIRS))
 
 CXXFLAGS += $(DEP_LIB_INC_OPTS)
 
@@ -72,7 +72,7 @@ CXXFLAGS += $(DEP_LIB_INC_OPTS)
 
 ifneq ($(DEP_LIBS),)
 
-DEP_LIBS_DIRS = $(foreach lib,$(DEP_LIBS),$(TOP_DIR)/../$(lib))
+DEP_LIBS_DIRS = $(addprefix $(LIB_DIR)/,$(DEP_LIBS))
 DEP_LIBS_SRC_DIRS = $(addsuffix /src,$(DEP_LIBS_DIRS))
 DEP_LIBS_TESTS_DIRS = $(addsuffix /tests,$(DEP_LIBS_DIRS))
 DEP_LIBS_FILES_MK = $(addsuffix /files.mk,$(DEP_LIBS_SRC_DIRS))
@@ -100,6 +100,10 @@ endif
 
 vpath %.cpp $(TOP_DIR)/src $(TOP_DIR)/tests $(DEP_LIBS_SRC_DIRS) $(DEP_LIBS_TESTS_DIRS)
 
+$(OBJDIRS):
+	$(ECHO) "Making directory $@"
+	mkdir -p $@
+
 $(BUILD)/%.o: %.cpp | $(OBJ_DIRS)
 	$(ECHO) "Compiling $<"
 	$(Q)$(CXX) $(CXXFLAGS) -c -o $@ $<
@@ -115,3 +119,17 @@ clean:
 clean-build:
 	$(ECHO) "Removing BUILD directory $(TOP_DIR)$(BUILD_DIR) ..."
 	$(Q)$(RM) -rf $(TOP_DIR)/$(BUILD)
+
+ifneq ($(PGM_NAME),)
+
+vpath %.cpp $(TOP_DIR)/programs/$(PGM_NAME)
+
+.PHONY: program
+program: $(BUILD)/$(PGM_NAME)
+
+$(info $(BUILD)/$(PGM_NAME): $(OBJS))
+$(BUILD)/$(PGM_NAME): $(OBJS)
+	$(ECHO) "Linking $(PGM_NAME)"
+	$(Q)$(CXX) $(LFLAGS) -o $@ $(OBJS)
+
+endif  # PGM_NAME

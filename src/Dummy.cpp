@@ -14,6 +14,6 @@
  *
  ****************************************************************************/
 
-#include "DuinoMakefile.h"
+#include "duino_makefile.h"
 
 Dummy::Dummy() {}

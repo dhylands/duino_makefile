@@ -8,7 +8,7 @@
  *
  ****************************************************************************/
 /**
- *   @file   DuinoMakefile.h
+ *   @file   duino_makefile.h
  *
  *   @brief  Dummy header file.
  *
