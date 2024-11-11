@@ -9,11 +9,13 @@ FIND_CMD = find $(TOP_DIR) \( -name '*.h' -o -name '*.cpp' -o -name '*.ino' \)
 style: STYLE_FILES = $(shell $(FIND_CMD))
 style:
 	$(ECHO) "Stylizing source files ..."
+	$(Q)clang-format --version
 	$(Q)clang-format --verbose $(CLANGFORMAT_ARGS) -i $(STYLE_FILES)
 
 test-style: FILES = $(shell $(FIND_CMD) -exec bash -c "clang-format $(CLANGFORMAT_ARGS) -output-replacements-xml {} | grep -cq 'replacement '" \; -print)
 test-style:
 	$(ECHO) ===== test-style =====
+	$(Q)clang-format --version
 	$(Q)if [ -n "$(FILES)" ]; then \
 		echo "" && \
 		echo "The following files require formatting (with style)" && \

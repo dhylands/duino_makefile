@@ -41,6 +41,10 @@ run-tools: test-style lint docs unittest
 .PHONY: compile-examples
 compile-examples:
 	$(ECHO) "===== Compiling examples ====="
-	$(Q)for dir in $(TOP_DIR)/examples/*; do \
-		$(MAKE) -C $${dir} TOP_DIR=../.. compile; \
-	done
+	$(Q)if [ -d $(TOP_DIR)/examples ]; then \
+		for dir in $(TOP_DIR)/examples/*; do \
+			$(MAKE) -C $${dir} TOP_DIR=../.. compile; \
+		done; \
+	else \
+		echo "No examples to build"; \
+	fi

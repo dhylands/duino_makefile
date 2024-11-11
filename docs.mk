@@ -10,6 +10,7 @@ docs: export PROJECT_EXAMPLES = $(wildcard $(BUILD)/examples)
 docs: export EXCLUDE = $(DOC_EXCLUDE)
 docs:
 	$(ECHO) "Generating HTNL documentation ..."
+	$(Q)doxygen --version
 	$(Q)cd $(TOP_DIR) && \
 	$(MKDIR) -p $${OUTPUT_DIRECTORY}/html && \
 	doxygen $(abspath $(DUINOMAKEFILE_DIR))/doxygen.cfg
