@@ -78,6 +78,7 @@ DEP_LIBS_TESTS_DIRS = $(addsuffix /tests,$(DEP_LIBS_DIRS))
 DEP_LIBS_FILES_MK = $(addsuffix /files.mk,$(DEP_LIBS_SRC_DIRS))
 
 ifeq ($(BUILD_VERBOSE),1)
+$(info LIB_DIR = $(LIB_DIR))
 $(info DEP_LIBS = $(DEP_LIBS))
 $(info DEP_LIBS_DIRS = $(DEP_LIBS_DIRS))
 $(info DEP_LIBS_SRC_DIRS = $(DEP_LIBS_SRC_DIRS))

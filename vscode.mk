@@ -6,18 +6,29 @@
 # in the bottom right corner of the status bar in VSCode. The `Linux` configuration
 # is useful when writing unittests, and the Arduino configuration is good for everything
 # else.
+
+ifeq ($(filter-out vscode-settings,$(MAKECMDGOALS)),)
+ifeq ($(wildcard *.ino),)
+$(error Please run make-vscode-settings ina directory containing a .ino file)
+endif
+endif
+
 .PHONY: vscode-settings
 vscode-settings: MK_SETTINGS = $(TOP_DIR)/.vscode/make_settings.py
 vscode-settings: VSCODE_SETTINGS = $(TOP_DIR)/.vscode/c_cpp_properties.json
 vscode-settings: CLI_COMPILE_CMD = $(shell $(COMPILE) --verbose 2> /dev/null | grep g++ | head -1)
+vscode-settings: CLI_AT_FILES = $(patsubst @%,%,$(filter @%,$(CLI_COMPILE_CMD)))
 vscode-settings: CLI_INC_DIRS = src $(DEP_LIB_INC_DIRS) $(patsubst -I%,%,$(sort $(filter -I%, $(CLI_COMPILE_CMD))))
-vscode-settings: CLI_DEFS = $(patsubst -D%,%,$(sort $(filter -D%, $(CLI_COMPILE_CMD))))
-vscode-settings: CLI_IPREFIX = $(patsubst -iprefix%,%,$(filter -iprefix%, $(CLI_COMPILE_CMD)))
-vscode-settings: CLI_PLATFORM_INCS = $(patsubst -iwithprefixbefore/%,$(CLI_IPREFIX)%,$(shell cat $(patsubst @%,%,$(filter @%,$(CLI_COMPILE_CMD))) /dev/null))
+vscode-settings: ARDUINO_INC_DIRS = $(addprefix ../,$(ARDUINO_LIBS))
+vscode-settings: CLI_DEFS =          $(patsubst -D%,%,$(sort $(filter -D%,$(CLI_COMPILE_CMD))))
+vscode-settings: CLI_PLATFORM_DEFS = $(patsubst -D%,%,$(sort $(filter -D%,$(shell cat $(CLI_AT_FILES) /dev/null))))
+vscode-settings: CLI_IPREFIX = $(patsubst -iprefix%,%,$(filter -iprefix%,$(CLI_COMPILE_CMD)))
+vscode-settings: CLI_PLATFORM_INCS = $(patsubst -iwithprefixbefore/%,$(CLI_IPREFIX)%,$(filter -iwithprefixbefore/%,$(shell cat $(CLI_AT_FILES) /dev/null)))
 vscode-settings: HOST_COMPILER = $(shell which g++)
 vscode-settings: HOST_INC_DIRS = $(shell echo | $(HOST_COMPILER) -x c++ -E -Wp,-v - 2>&1 | grep -e '^ ')
 vscode-settings: HOST_LIBRARY_INCS = $(abspath $(addprefix $(TOP_DIR)/, src $(DEP_LIB_INC_DIRS)))
 vscode-settings:
+	@echo "TOP_DIR = ${TOP_DIR}"
 	@echo "CLI_INC_DIRS = ${CLI_INC_DIRS}"
 	@echo "CLI_COMPILE_CMD = ${CLI_COMPILE_CMD}"
 	@echo "CLI_PLATFORM_INCS = ${CLI_PLATFORM_INCS}"
@@ -54,7 +65,7 @@ vscode-settings:
 	@echo '    "compilerPath": "$(firstword $(CLI_COMPILE_CMD))",' >> ${MK_SETTINGS}
 	@echo '    "intelliSenseMode": "linux-gcc-arm",' >> ${MK_SETTINGS}
 	@echo '    "includePath": [' >> ${MK_SETTINGS}
-	@for dir in $(CLI_INC_DIRS) $(CLI_PLATFORM_INCS); do \
+	@for dir in $(CLI_INC_DIRS) $(CLI_PLATFORM_INCS) $(ARDUINO_INC_DIRS); do \
 		if [ "$${dir#/}" != "$${dir}" ]; then \
 		    echo '        "'$${dir}'",' >> ${MK_SETTINGS}; \
 		else \
@@ -70,8 +81,8 @@ vscode-settings:
 	# And we'll only include `VAR=abc` into the defines. If this becomes an
 	# issuethen we'll need to implement this in a python script rather than
 	# try to use make/bash.
-	echo "DEFS = $($(subst ",,$(CLI_DEFS)))"
-	for cflag in $(subst ",,$(CLI_DEFS)); do \
+	echo "DEFS = $($(subst ",,$(CLI_DEFS))) $(CLI_PLATFORM_DEFS)"
+	for cflag in $(subst ",,$(CLI_DEFS)) $(CLI_PLATFORM_DEFS); do \
 		echo '        "'$${cflag}'",' >> ${MK_SETTINGS}; \
 	done
 	echo '    ],  # defines' >> ${MK_SETTINGS}

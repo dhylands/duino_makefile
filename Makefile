@@ -2,7 +2,7 @@ DUINOMAKEFILE_DIR := $(patsubst %/,%,$(dir $(lastword $(MAKEFILE_LIST))))
 
 # LIB_DIR is the directory that the Arduino libraries are stored it.
 # It is expected to be the directory that duino_makefile is contained in.
-LIB_DIR ?= $(dir $(DUINOMAKEFILE_DIR))
+LIB_DIR ?= $(patsubst %/,%,$(dir $(DUINOMAKEFILE_DIR)))
 
 ifeq ($(TOP_DIR),)
 $(info PWD = $(PWD))
@@ -44,6 +44,7 @@ include $(DUINOMAKEFILE_DIR)/build.mk
 include $(DUINOMAKEFILE_DIR)/arduino-cli.mk
 include $(DUINOMAKEFILE_DIR)/unittest.mk
 include $(DUINOMAKEFILE_DIR)/docs.mk
+include $(DUINOMAKEFILE_DIR)/python.mk
 include $(DUINOMAKEFILE_DIR)/style.mk
 include $(DUINOMAKEFILE_DIR)/tools.mk
 include $(DUINOMAKEFILE_DIR)/lint.mk
