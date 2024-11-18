@@ -2,10 +2,12 @@
 
 #     BOARD        VID    PID    FQBN - Fully Qualified Board Name
 #     ---------    ------ ------ -------------------------------------------
-BOARD_pico 	     = 0x2e8a 0x000a rp2040:rp2040:rpipico
-BOARD_picow	     = 0x2e8a 0xf00a rp2040:rp2040:rpipicow
-BOARD_zero		 = 0x2e8a 0x0003 rp2040:rp2040:waveshare_rp2040_zero
-BOARD_esp32thing = 0x0403 0x6015 esp32:esp32:esp32thing
+BOARD_pico 	     = 0x2e8a 0x000a rp2040:rp2040:rpipico                # Raspberry Pi Pico
+BOARD_picow	     = 0x2e8a 0xf00a rp2040:rp2040:rpipicow               # Raspberry Pi Pico W
+BOARD_zero		 = 0x2e8a 0x0003 rp2040:rp2040:waveshare_rp2040_zero  # Waveshare RP2040 Zero
+
+BOARD_esp32      = 0x10c4 0xea60 esp32:esp32:esp32	                  # ESP32 Dev Module
+BOARD_esp32thing = 0x0403 0x6015 esp32:esp32:esp32thing               # SparkFun ESP32 Thing
 
 ifeq ($BOARD_$(BOARD),)
 $(error No BOARD definition found for $(BOARD))
