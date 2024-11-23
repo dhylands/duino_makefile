@@ -18,7 +18,7 @@ pytest:
 .PHONY: pycoverage
 pycoverage:
 	$(Q)coverage --version
-	$(Q)coverage run --source=duino_bus -m pytest
+	$(Q)coverage run --source=$(basename ${PWD}) -m pytest
 	$(Q)coverage report -m
 
 .PHONY: requirements
