@@ -3,7 +3,12 @@
 # Reformats the source code for a consistent look
 
 CLANGFORMAT_ARGS := -style='{BasedOnStyle: chromium, IndentWidth: 4, AccessModifierOffset: -3, AlignAfterOpenBracket: AlwaysBreak, BinPackParameters: false, ColumnLimit: 100, SortIncludes: false}'
-FIND_CMD = find $(TOP_DIR) \( -name '*.h' -o -name '*.cpp' -o -name '*.ino' \)
+FIND_CMD = find $(TOP_DIR) \( -name '*.h' -o -name '*.cpp' -o -name '*.ino' \) ! -path "*/.*"
+
+.PHONY: print-style-files
+print-style-files:
+	$(ECHO) "Files that will be clang-format styled"
+	$(FIND_CMD)
 
 .PHONY: style
 style: STYLE_FILES = $(shell $(FIND_CMD))
