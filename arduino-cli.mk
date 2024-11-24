@@ -17,6 +17,16 @@ VID 	= $(word 1, $(BOARD_$(BOARD)))
 PID 	= $(word 2, $(BOARD_$(BOARD)))
 FQBN 	= $(word 3, $(BOARD_$(BOARD)))
 
+# The FQBN consists of 3 components, separated by colons.
+# VENDOR:ARCHITECTURE:BOARD_ID
+
+FQBN_WORDS  = $(subst :,$(SPACE),$(FQBN))
+FQBN_VENDOR = $(word 1,$(FQBN_WORDS))
+FQBN_ARCH   = $(word 2,$(FQBN_WORDS))
+FQBN_BOARD  = $(word 3,$(FQBN_WORDS))
+
+FQBN_VENDOR_ARCH = $(FQBN_VENDOR):$(FQBN_ARCH)
+
 #MONITOR ?= python3 -m serial.tools.miniterm --raw $(PORT) 115200
 MONITOR ?= $(ARDUINO_CLI) monitor --raw --port $(PORT) --config baudrate=$(BAUD_RATE)
 
@@ -89,7 +99,7 @@ ifeq ($(CI),true)
 	$(ARDUINO_CLI) config set directories.user $(dir $(abspath $(PWD)/..))
 endif
 	$(ARDUINO_CLI) core update-index
-	$(ARDUINO_CLI) core install rp2040:rp2040
+	$(ARDUINO_CLI) core install $(FQBN_VENDOR_ARCH)
 
 # Extracts the depends= line from the library.properties file and converts spaces to colons and commas to spaces
 # Just before installing we convert the colon back to a space
