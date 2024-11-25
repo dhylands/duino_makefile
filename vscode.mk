@@ -24,7 +24,7 @@ endif
 .PHONY: vscode-settings
 vscode-settings: VSCODE_SETTINGS = $(TOP_DIR)/.vscode/c_cpp_properties.json
 vscode-settings: CLI_CONFIG = Arduino-$(BOARD)
-vscode-settings: CLI_COMPILE_CMD = $(shell $(COMPILE) --verbose 2> /dev/null | grep g++ | grep .ino.cpp | grep -v -- -lc | tail -1)
+vscode-settings: CLI_COMPILE_CMD = $(shell $(COMPILE) --verbose 2> /dev/null | grep g++ | grep .ino.cpp | grep -v -- -Wl | tail -1)
 vscode-settings: HOST_CONFIG = Linux
 vscode-settings: HOST_COMPILER = $(shell which g++)
 vscode-settings: HOST_INC_DIRS = $(addprefix -I,$(shell echo | $(HOST_COMPILER) -x c++ -E -Wp,-v - 2>&1 | grep -e '^ '))

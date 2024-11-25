@@ -30,4 +30,8 @@ requirements:
 install-python-tools: requirements
 
 .PHONY: run-python-tools
-run-python-tools: pylint pytest pycoverage
+run-python-tools: pylint
+
+ifneq ($(wildcard tests),)
+run-python-tools: pytest pycoverage
+endif
