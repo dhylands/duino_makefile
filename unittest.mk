@@ -14,7 +14,7 @@ $(TEST_DEPS):
 include $(wildcard $(TEST_DEPS))
 
 $(TEST_OBJS): | $(TEST_OBJ_DIRS)
-$(TEST_OBJS): CXXFLAGS += -I $(TOP_DIR)/src $(DEP_LIB_INC_OPTS)
+$(TEST_OBJS): CXXFLAGS += -I $(TOP_DIR)/include $(DEP_LIB_INC_OPTS)
 
 # duino_log => $(TOP_DIR)/duino_log/$(BUILD_REL)/libduino_log.a
 
