@@ -50,6 +50,7 @@ COMPILE = $(ARDUINO_CLI) compile $(CLI_VERBOSE) --fqbn $(FQBN)
 .PHONY: compile
 compile:
 	$(ECHO) "Compiling for BOARD $(BOARD)"
+	$(ARDUINO_CLI) version
 	$(COMPILE)
 
 # Try detecting the RPi Pico via the serial port. If no serial port found,

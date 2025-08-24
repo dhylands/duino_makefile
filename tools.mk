@@ -43,7 +43,7 @@ compile-examples:
 	$(ECHO) "===== Compiling examples ====="
 	$(Q)if [ -d $(TOP_DIR)/examples ]; then \
 		for dir in $(TOP_DIR)/examples/*; do \
-			$(MAKE) -C $${dir} TOP_DIR=../.. compile; \
+			$(MAKE) V=1 -C $${dir} TOP_DIR=../.. compile; \
 		done; \
 	else \
 		echo "No examples to build"; \
