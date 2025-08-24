@@ -44,7 +44,7 @@ COMMON_FLAGS += -Wall -Werror -Wextra \
 # We let the comiler generate the dependency files.
 DEP_FLAGS += -MT $@ -MMD -MP -MF ${@:%.o=%.d}
 
-COMMON_FLAGS += -I $(TOP_DIR)/include
+COMMON_FLAGS += -I $(TOP_DIR)/src
 COMMON_FLAGS += $(DEP_FLAGS)
 
 CFLAGSS += $(COMMON_FLAGS)
@@ -62,7 +62,7 @@ $(DEPS):
 include $(wildcard $(DEPS))
 
 # DEP_LIB_INC_DIRS is relative to TOP_DIR
-DEP_LIB_INC_DIRS = $(addprefix $(LIB_DIR)/,$(DEP_LIBS)) $(addprefix $(LIB_DIR)/,$(addsuffix /include,$(DEP_LIBS)))
+DEP_LIB_INC_DIRS = $(addprefix $(LIB_DIR)/,$(DEP_LIBS)) $(addprefix $(LIB_DIR)/,$(addsuffix /src,$(DEP_LIBS)))
 DEP_LIB_INC_OPTS = $(addprefix -I, $(DEP_LIB_INC_DIRS))
 
 CXXFLAGS += $(DEP_LIB_INC_OPTS)
