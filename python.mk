@@ -3,7 +3,7 @@ PYTHON_FILES = $(shell find $(TOP_DIR) -name '*.py' -not -path  './.direnv/*' -n
 .PHONY: pystyle
 pystyle:
 	$(Q)yapf --version
-	$(Q)yapf -i $(PYTHON_FILES)
+	$(Q)yapf -i --style='{based_on_style: pep8, column_limit: 100}' $(PYTHON_FILES)
 
 .PHONY: pylint
 pylint:
